@@ -1,4 +1,6 @@
-How to use this beacon? Visit the wiki !
+NOTE : you need to use the "all bluetooth" version to use it as intended
+//================
+How to use this beacon? 
 
 How to transmit data to the beacon : -install a serial blutooth android app -make sure that "Newline" is "None"
 
