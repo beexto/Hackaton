@@ -1,4 +1,4 @@
-##titre NOTE : you need to use the "all bluetooth" version to use it as intended
+*__NOTE__* : you need to use the "all bluetooth" version to use it as intended
 //================
 How to use this beacon? 
 
