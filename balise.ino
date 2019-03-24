@@ -137,7 +137,7 @@ byte point_haut[8]={
 String description="description";
 String news="news";
 String name="name";
-String owner="WHO'S THE OWNER";
+String owner="WHO'S THE OWNER?";
 String trash="";
 /** Objet LiquidCrystal pour communication avec l'écran LCD */
 LiquidCrystal lcd(8, 9, 4, 5, 6, 7);
