@@ -168,6 +168,8 @@ void setup() {
   description.reserve(40);
   news.reserve(40);
   trash.reserve(40);
+  pinMode(10,OUTPUT);
+  analogWrite(10,200);
 }
 
 
