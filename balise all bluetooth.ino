@@ -132,12 +132,12 @@ LiquidCrystal lcd(8, 9, 4, 5, 6, 7);
 //comm SoftwareSerial
 SoftwareSerial hc06(12,13);//TX-RX
 //================================================== 
-int lum=200;
+int lum=255;
 char n;
 char menu=1;
 char on=1;
 char select=0;
-char reglage=R_r;
+//char reglage=R_r;
 double t2=0;
 double t1=0;
 //=============================================initialize new pixels, lcd and serial over hc06
@@ -167,7 +167,7 @@ comm_hc06();
 affichage();
 bouton();
 gestion_variable();
-luminositee()
+luminositee();
 delay(250);
 }
 //=============================================
@@ -253,7 +253,7 @@ void bouton()
             menu--;
           else
           {
-            reglage--;
+            //reglage--;
           }
           
         break ;
@@ -264,7 +264,7 @@ void bouton()
             menu++;
           else
           {
-            reglage++;
+            //reglage++;
           }
           
         break;
@@ -273,12 +273,12 @@ void bouton()
           if (select!=1)
           {
             select=1;
-            reglage=1;
+            //reglage=1;
           }
           else
           {
             select=0;
-            reglage=R_r; 
+            //reglage=R_r; 
           }
           t2=millis();        
         break ;
@@ -295,13 +295,13 @@ void gestion_variable()
 
   if ((t1-t2)>7300)
   {
-    reglage=R_r;
+    //reglage=R_r;
     select=0;
   }
 
   if (menu!=MENU_coord)
   {
-  reglage=R_r;
+  //reglage=R_r;
   select=0;
   }
 
@@ -493,4 +493,5 @@ void luminositee()
 {
   analogWrite(10,lum);
   if ((t1-t2)>3600000)
+  analogWrite(10,15);
 }
