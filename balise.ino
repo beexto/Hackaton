@@ -30,7 +30,7 @@ exemple : PSWD,n,x,y for B_coord
           PSWD,nowner for B_owner*/
 //enum of reglage
 enum{
-  R_r,
+  R_r=-1,
 R_10x,           /* 10x -> +10||x -> +1||0_1x -> +0.1||00_1x -> +00.1 */
 R_x ,
 R_0_1x  ,
@@ -383,18 +383,49 @@ void gestion_variable()
     reglage=R_r;
     select=0;
   }
-  
+  /*
+  if(pos.x<0)
+  {
+    if(reglage==R_00_1x)
+    reglage=R_100y;
+  }
+  if(pos.y<0)
+  {
+    if(reglage>R_0_1y)
+    reglage=R_10x;
+    if(reglage<R_10x)
+    reglage=R_0_1y;
+  }
+  */
   if (reglage<R_10x && select==1)
     reglage=R_00_1y;
 
   if (reglage>R_00_1y && select==1)
     reglage=R_10x;
+  
+  
+  
 
   if (menu!=MENU_coord)
   {
   reglage=R_r;
   select=0;
   }
+
+  if (pos.x>80) {
+    pos.x=-80;
+  }
+  if (pos.x<-80) {
+    pos.x=80;
+  }
+
+  if (pos.y>160) {
+    pos.y=-160;
+  }
+  if (pos.y<-160) {
+    pos.y=160;
+  }
+  
 }
 //=============================================
 void affichage()
@@ -469,14 +500,14 @@ void affichage_coord()
 {
   lcd.setCursor(0,0);
   lcd.print("x:");
-  if (pos.x<10)
+  if (pos.x<10 && pos.x>=0)
   lcd.print("0");
   lcd.print(pos.x);
   lcd.setCursor(7,0);
   lcd.print("y:");
-  if (pos.y<10)
+  if (pos.y<10 && pos.y>=0)
   lcd.print("0");
-  if (pos.y<100)
+  if (pos.y<100 && pos.y>=0)
   lcd.print("0");
 
   lcd.print(pos.y);
@@ -485,48 +516,136 @@ void affichage_coord()
   switch(reglage)
   {
     case R_10x:
-      lcd.setCursor(2,1);
-      lcd.write((byte)6);
+    if(pos.x<0 && pos.x>-10)
+    reglage=R_y;
+
+    if(pos.x<=-10 && pos.x>-100)
+    lcd.setCursor(3,1);
+    
+    if(pos.x>=0)
+    lcd.setCursor(2,1);
+     
+    lcd.write((byte)6);
     break;
 
     case R_x:
-      lcd.setCursor(3,1);
-      lcd.write((byte)6);           
+    if(pos.x<0 && pos.x>-10)
+    lcd.setCursor(3,1);
+
+    if(pos.x<=-10 && pos.x>-100)
+    lcd.setCursor(4,1);
+    
+    if(pos.x>=0)
+    lcd.setCursor(3,1);
+     
+    lcd.write((byte)6);           
     break;
 
     case R_0_1x:
-      lcd.setCursor(5,1);
-      lcd.write((byte)6);           
+    if(pos.x<0 && pos.x>-10)
+    lcd.setCursor(5,1);
+
+    if(pos.x<=-10 && pos.x>-100)
+    lcd.setCursor(6,1);
+    
+    if(pos.x>=0)
+    lcd.setCursor(5,1);
+     
+    lcd.write((byte)6);           
     break;
 
     case R_00_1x:
-      lcd.setCursor(6,1);
-      lcd.write((byte)6);            
+    if(pos.x<0 && pos.x>-10)
+    lcd.setCursor(6,1);
+
+    if(pos.x<=-10 && pos.x>-100)
+    reglage=R_100y;
+    
+    if(pos.x>=0)
+    lcd.setCursor(6,1);
+     
+    lcd.write((byte)6);    
     break;
 
     case R_100y:
-     lcd.setCursor(9,1);
+    if(pos.y<0 && pos.y>-10)
+    reglage=R_y;
+
+    if(pos.y<=-10 && pos.y>-100)
+    reglage=R_10y;
+
+    if(pos.y<=-100)
+    lcd.setCursor(10,1);
+    
+    if(pos.y>=0)
+    lcd.setCursor(9,1);
+     
       lcd.write((byte)6);            
     break;
 
     case R_10y:
-      lcd.setCursor(10,1);
+    if(pos.y<0 && pos.y>-10)
+    lcd.setCursor(9,1);
+
+    if(pos.y<=-10 && pos.y>-100)
+    lcd.setCursor(10,1);
+
+    if(pos.y<=-100)
+    lcd.setCursor(11,1);
+    
+    if(pos.y>=0)
+    lcd.setCursor(10,1);
+     
       lcd.write((byte)6);            
     break;
 
     case R_y:
-      lcd.setCursor(11,1);
-      lcd.write((byte)6);           
+    if(pos.y<0 && pos.y>-10)
+    lcd.setCursor(10,1);
+
+    if(pos.y<=-10 && pos.y>-100)
+    lcd.setCursor(11,1);
+
+    if(pos.y<=-100)
+    lcd.setCursor(12,1);
+    
+    if(pos.y>=0)
+    lcd.setCursor(11,1);
+     
+    lcd.write((byte)6);           
     break;
 
     case R_0_1y:
-     lcd.setCursor(13,1);
-      lcd.write((byte)6);            
+    if(pos.y<0 && pos.y>-10)
+    lcd.setCursor(12,1);
+
+    if(pos.y<=-10 && pos.y>-100)
+    lcd.setCursor(13,1);
+
+    if(pos.y<=-100)
+    lcd.setCursor(14,1);
+    
+    if(pos.y>=0)
+    lcd.setCursor(13,1);
+     
+    lcd.write((byte)6);           
     break;
 
     case R_00_1y:
-      lcd.setCursor(14,1);
-      lcd.write((byte)6);            
+    if(pos.y<0 && pos.y>-10)
+    lcd.setCursor(13,1);
+
+    if(pos.y<=-10 && pos.y>-100)
+    lcd.setCursor(14,1);
+
+    if(pos.y<=-100)
+    reglage=R_0_1y;
+    
+    if(pos.y>=0)
+    lcd.setCursor(14,1);
+     
+    lcd.write((byte)6); 
+                  
     break;
 
   }
