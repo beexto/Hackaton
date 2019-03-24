@@ -1,6 +1,17 @@
 How to use this beacon? Visit the wiki !
 
+How to transmit data to the beacon : -install a serial blutooth android app -make sure that "Newline" is "None"
 
+Every command is composed of 3 mains part : -Password("pswd" in code) -the part you want to change("n" in code) -String or float
+
+2 possibilities: -"pswd,n,x,y" (for the coord part) -"pswd,nString"(for all the other parts)
+
+n list : -0 coordinates -1 name of the beacon -2 description -3 local news -4 owner
+
+The password ensure that the beacon's owner stays authentified. You cannot change the String "owner" without the good password. All other field are still open with any other number, in the serial communication you can type any number for pswd.
+
+
+//============================================================================
 = Liquid Crystal Library for Arduino =
 
 This library allows an Arduino board to control LiquidCrystal displays (LCDs) based on the Hitachi HD44780 (or a compatible) chipset, which is found on most text-based LCDs.
