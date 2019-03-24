@@ -134,10 +134,10 @@ byte point_haut[8]={
   B00000
 };
 //==============================================
-String description="description                     ";
-String news="news                            ";
+String description="description";
+String news="news";
 String name="name";
-String owner="WHO'S azazdhazda                ";
+String owner="WHO'S THE OWNER";
 String trash="";
 /** Objet LiquidCrystal pour communication avec l'écran LCD */
 LiquidCrystal lcd(8, 9, 4, 5, 6, 7);
