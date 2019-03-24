@@ -1,6 +1,5 @@
 #include <LiquidCrystal.h>
 #include <SoftwareSerial.h>
-
 /** Énumération of boutons  */
 enum {
   BUTTON_NONE,  
@@ -10,7 +9,7 @@ enum {
   BUTTON_RIGHT,
   BUTTON_SELECT 
 };
-// enumeration of menus each is for a complete 16*2 screen(navigation is right/left)
+// enumeration of menus, each is for a complete 16*2 screen(navigation is right/left)
 enum {
   MENU_coord=1,  
   MENU_desc=2,
@@ -27,12 +26,10 @@ enum {
 };
 /* bluetooth protocol 
 exemple : PSWD,n,x,y for B_coord 
-          PSWD,nowner for B_owner*/
+          PSWD,nowner for B_owner   */
 
-
-//===============================voltage divider
-/* R1 20k in serie with R2 10k*/
-#define TENSION_MAX 860 //analogRead() 12.3V ==> 4.1 after voltage divider
+/*voltage divider bridge R1 20k in serie with R2 10k*/
+#define TENSION_MAX 860 //analogRead() 12.3V ==> 4.1 after voltage divider bridge
 #define TENSION_MIN 839 //analogRead() 12.6V ==> 4.2 
 #define PIN_BATT A5
 #define PSWD 42
@@ -121,23 +118,19 @@ byte point_haut[8]={
   B00000,
   B00000
 };
-//==============================================
+//============================================string to get info frome bluetooth serial and print on lcd
 String description="description";
 String news="news";
 String name="name";
 String owner="WHO'S THE OWNER?";
-String trash="";
+String trash="";// to store the excess info from serial if pswd!=PSWD to write on "owner"
 /** Objet LiquidCrystal pour communication avec l'écran LCD */
 LiquidCrystal lcd(8, 9, 4, 5, 6, 7);
 //comm SoftwareSerial
 SoftwareSerial hc06(12,13);//TX-RX
 //================================================== 
 int lum=255;
-char n;
 char menu=1;
-char on=1;
-char select=0;
-//char reglage=R_r;
 double t2=0;
 double t1=0;
 //=============================================initialize new pixels, lcd and serial over hc06
@@ -166,58 +159,53 @@ t1=millis();
 comm_hc06();
 affichage();
 bouton();
-gestion_variable();
-luminositee();
+loop_variable();
+brightness();
 delay(250);
 }
 //=============================================
 void comm_hc06()
 {
-    if(hc06.available() > 0)
+  if(hc06.available() > 0)
   {
     int pswd=hc06.parseInt();
-    n=hc06.parseInt();
+    int n=hc06.parseInt();
     switch (n)
+    {
+      case B_name:
+        name=hc06.readString();
+      break;
+
+      case B_desc:
+        description=hc06.readString();
+      break;
+
+      case B_news:
+        news=hc06.readString();
+      break;
+
+      case B_owner:
+      if(pswd!=PSWD)
+        trash=hc06.readString();
+        else
         {
-          case B_name:
-            name=hc06.readString();
-          break;
+          owner=hc06.readString();
+        }
+        
+      break;
 
-          case B_desc:
-            description=hc06.readString();
-          break;
-
-          case B_news:
-            news=hc06.readString();
-          break;
-
-          case B_owner:
-          if(pswd!=PSWD)
-            trash=hc06.readString();
-            else
-            {
-              owner=hc06.readString();
-            }
-            
-          break;
-
-          case B_coord:
-            pos.x = hc06.parseFloat();
-            pos.y= hc06.parseFloat();
-          break ;
-        }     
-      } 
-    
-  
+      case B_coord:
+        pos.x = hc06.parseFloat();
+        pos.y= hc06.parseFloat();
+      break ;
+    }     
+  } 
 }
 //=============================================
 byte getPressedButton()
 {
+  int value = analogRead(A0);// read the button state 
 
-  /* Lit l'état des boutons */
-  int value = analogRead(A0);
-
-  /* Calcul l'état des boutons */
   if (value < 99)
     return BUTTON_RIGHT;
   else if (value < 255)
@@ -230,7 +218,6 @@ byte getPressedButton()
     return BUTTON_SELECT;
   else
     return BUTTON_NONE;
-  
 }
 //=============================================
 void bouton()
@@ -251,73 +238,39 @@ void bouton()
           t2=millis();
           if (select==0)
             menu--;
-          else
-          {
-            //reglage--;
-          }
-          
         break ;
 
         case BUTTON_RIGHT :
           t2=millis();
-          if (select==0)
-            menu++;
-          else
-          {
-            //reglage++;
-          }
-          
         break;
 
         case BUTTON_SELECT :
-          if (select!=1)
-          {
-            select=1;
-            //reglage=1;
-          }
-          else
-          {
-            select=0;
-            //reglage=R_r; 
-          }
-          t2=millis();        
+          t2=millis();       
         break ;
     }
 }
 //=============================================
-void gestion_variable()
+void loop_variable()
 {
+  //loop between menus
   if (menu<MENU_coord)
     menu=MENU_owner;  
 
   if (menu>MENU_owner)
     menu=MENU_coord;
-
-  if ((t1-t2)>7300)
-  {
-    //reglage=R_r;
-    select=0;
-  }
-
-  if (menu!=MENU_coord)
-  {
-  //reglage=R_r;
-  select=0;
-  }
-
-  if (pos.x>80) {
+  //loop between possible value of latitude=x {-80;80}
+  if (pos.x>80) 
     pos.x=-80;
-  }
-  if (pos.x<-80) {
+  
+  if (pos.x<-80) 
     pos.x=80;
-  }
-
-  if (pos.y>160) {
+  //loop between possible value of longitude=y {-160;160}
+  if (pos.y>160) 
     pos.y=-160;
-  }
-  if (pos.y<-160) {
+  
+  if (pos.y<-160) 
     pos.y=160;
-  }
+  
   
 }
 //=============================================
@@ -329,7 +282,6 @@ void affichage()
     case MENU_coord :
       affichage_coord();
       affichage_batterie();
-      if (select==0)
       affichage_name();   
     break ;
 
@@ -351,44 +303,42 @@ void affichage()
 void affichage_batterie()
 {
   lcd.setCursor(15,0);
-
-  int batt=lecture_batterie();
-  
+  int segment_batt=lecture_battery();
   if (batt<1)
   {
-    lcd.write((byte)5);
+  lcd.write((byte)5);
   }
   else if (batt<2)
-        {
-        lcd.write((byte)4);
-        }
-        else if (batt<3)
-            {
-              lcd.write((byte)3);
-            }
-            else if (batt<4)
-                  {
-                    lcd.write((byte)2);
-                  }
-                  else if (batt<5)
-                        {
-                            lcd.write((byte)1);
-                        }
-                        else if(batt>=5)
-                          {
-                            lcd.write((byte)0);
-                          }
+  {
+  lcd.write((byte)4);
+  }
+  else if (batt<3)
+  {
+  lcd.write((byte)3);
+  }
+  else if (batt<4)
+  {
+  lcd.write((byte)2);
+  }
+  else if (batt<5)
+  {
+    lcd.write((byte)1);
+  }
+  else if(batt>=5)
+  {
+    lcd.write((byte)0);
+  }
 }
 //=============================================reads an analogRead on a voltage dividing bridge
-int lecture_batterie()
+int lecture_battery()
 {
   int tension =analogRead(PIN_BATT);
   tension = TENSION_MAX-tension;
   int segment_batt= tension/4.2;
-  return segment_batt;
+  return segment_batt;      //return the number {0;5} of segment in the battery
 }
 
-//========================================dispay x and y coordinates and an upward arrow when modifying it
+//==================================display x and y coordinates
 void affichage_coord()
 {
   lcd.setCursor(0,0);
@@ -396,15 +346,14 @@ void affichage_coord()
   if (pos.x<10 && pos.x>=0)
   lcd.print("0");
   lcd.print(pos.x);
+
   lcd.setCursor(7,0);
   lcd.print("y:");
   if (pos.y<10 && pos.y>=0)
   lcd.print("0");
   if (pos.y<100 && pos.y>=0)
   lcd.print("0");
-
   lcd.print(pos.y);
- 
 }
 //=============================================displays a description of the beacon(whats near etc)
 void affichage_description()
@@ -414,18 +363,16 @@ void affichage_description()
   {
     for(int i=0;i<16;i++)
     {
-    lcd.print(description[i]);
+      lcd.print(description[i]);
     }
     lcd.setCursor(0,1);
     for(int i=16;i<description.length();i++)
     {
-    lcd.print(description[i]);
+      lcd.print(description[i]);
     }
   }
   else
-  {
     lcd.print(description);
-  }
 }
 //=============================================displays local news ( writabe by everyone )
 void affichage_news()
@@ -444,10 +391,7 @@ void affichage_news()
     }
   }
   else
-  {
     lcd.print(news);
-  }
-  
 }
 //============================================= displays the beacon's name(locked to the owner)
 void affichage_name()
@@ -464,7 +408,6 @@ void affichage_name()
   {
     lcd.print(name);
   }
-  
 }
 //====================================== show the identity of the beacon's placer (locked to the owner)
 void affichage_owner()
@@ -474,12 +417,12 @@ void affichage_owner()
   {
     for(int i=0;i<16;i++)
     {
-    lcd.print(owner[i]);
+      lcd.print(owner[i]);
     }
     lcd.setCursor(0,1);
     for(int i=16;i<owner.length();i++)
     {
-    lcd.print(owner[i]);
+      lcd.print(owner[i]);
     }
   }
   else
@@ -487,11 +430,10 @@ void affichage_owner()
     lcd.print(owner);
   }
 }
-
 //=========================================
-void luminositee()
+void brightness()
 {
   analogWrite(10,lum);
   if ((t1-t2)>3600000)
-  analogWrite(10,15);
+    analogWrite(10,15);
 }
