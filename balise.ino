@@ -134,11 +134,11 @@ byte point_haut[8]={
   B00000
 };
 //==============================================
-String description="description";
-String news="news";
+String description="description                     ";
+String news="news                            ";
 String name="name";
-String owner="WHO'S THE OWNER ?";
-
+String owner="WHO'S azazdhazda                ";
+String trash="";
 /** Objet LiquidCrystal pour communication avec l'écran LCD */
 LiquidCrystal lcd(8, 9, 4, 5, 6, 7);
 //comm SoftwareSerial
@@ -163,6 +163,11 @@ void setup() {
   lcd.createChar(5,batterie_100);
   lcd.createChar(6,point_haut);
   hc06.begin(9600);
+  owner.reserve(40);
+  name.reserve(40);
+  description.reserve(40);
+  news.reserve(40);
+  trash.reserve(40);
 }
 
 
@@ -179,17 +184,9 @@ void comm_hc06()
 {
     if(hc06.available() > 0)
   {
-    int pswd=hc06parseInt();
+    int pswd=hc06.parseInt();
     n=hc06.parseInt();
-    if (pswd==PSDW)
-    {
-      
-      if (n==B_owner)
-      owner=hc06.readString();
-    }
-    else
-      {  
-        switch (n)
+    switch (n)
         {
           case B_name:
             name=hc06.readString();
@@ -204,7 +201,13 @@ void comm_hc06()
           break;
 
           case B_owner:
-            owner=hc06.readString();
+          if(pswd!=PSWD)
+            trash=hc06.readString();
+            else
+            {
+              owner=hc06.readString();
+            }
+            
           break;
 
           case B_coord:
@@ -214,7 +217,7 @@ void comm_hc06()
         }     
       } 
     
-  }
+  
 }
 //=============================================
 byte getPressedButton()
@@ -538,7 +541,7 @@ void affichage_description()
     lcd.print(description[i]);
     }
     lcd.setCursor(0,1);
-    for(int i=16;i<32;i++)
+    for(int i=16;i<description.length();i++)
     {
     lcd.print(description[i]);
     }
@@ -559,7 +562,7 @@ void affichage_news()
     lcd.print(news[i]);
     }
     lcd.setCursor(0,1);
-    for(int i=16;i<32;i++)
+    for(int i=16;i<news.length();i++)
     {
     lcd.print(news[i]);
     }
@@ -576,12 +579,7 @@ void affichage_name()
   lcd.setCursor(0,1);
   if (name.length()>15)
   {
-    for(int i=0;i<16;i++)
-    {
-    lcd.print(name[i]);
-    }
-    lcd.setCursor(0,1);
-    for(int i=16;i<32;i++)
+    for(int i=0;i<name.length();i++)
     {
     lcd.print(name[i]);
     }
@@ -603,7 +601,7 @@ void affichage_owner()
     lcd.print(owner[i]);
     }
     lcd.setCursor(0,1);
-    for(int i=16;i<32;i++)
+    for(int i=16;i<owner.length();i++)
     {
     lcd.print(owner[i]);
     }
